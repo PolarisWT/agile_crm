@@ -46,102 +46,25 @@ ContactAPI.prototype.getOptions = function getOptions() {
 
 ContactAPI.prototype.getListContacts = function getListContacts(success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/contacts?page_size=20';
-
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 ContactAPI.prototype.getContactById = function getContactById(contactId, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId;
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                if (body) {
-                    try {
-						console.log("Status Code = " + resp.statusCode);
-                        var contacts = JSON.parse(body);
-                        success(contacts);
-                    } catch (ex) {
-                        failure(ex);
-                    }
-                }
-            } else {
-                success({});
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 ContactAPI.prototype.getContactByEmail = function getContactByEmail(email, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/contacts/search/email/' + email;
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e) {
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 ContactAPI.prototype.add = function add(contact, success, failure) {
@@ -150,33 +73,7 @@ ContactAPI.prototype.add = function add(contact, success, failure) {
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 200){
-                        console.log("Error message = " + body);
-                    }
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var post = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -193,33 +90,7 @@ ContactAPI.prototype.update = function update(contact, success, failure) {
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 200){
-                        console.log("Error message = " + body);
-                    }
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -234,31 +105,9 @@ ContactAPI.prototype.deleteContact = function deleteContact(contactId, success, 
     var options = this.getOptions();
     options.path = '/dev/api/contacts/' + contactId;
     options.method = 'DELETE';
-	options.headers['Content-Type'] = 'application/json';
+    options.headers['Content-Type'] = 'application/json';
 
-    var del = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var del = createHttpsRequest(options, success, failure);
 
     try {
         del.end();
@@ -273,29 +122,7 @@ ContactAPI.prototype.updateTagsById = function update(contact, success, failure)
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -312,29 +139,7 @@ ContactAPI.prototype.deleteTagsById = function update(contact, success, failure)
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -351,29 +156,7 @@ ContactAPI.prototype.createDeal = function createDeal(opportunity, success, fail
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var opportunity = JSON.parse(body);
-                    success(opportunity);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var post = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(opportunity);
@@ -390,29 +173,7 @@ ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, fail
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var opportunity = JSON.parse(body);
-                    success(opportunity);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(opportunity);
@@ -425,74 +186,18 @@ ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, fail
 
 ContactAPI.prototype.getDealById = function getDealById(dealId, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/opportunity/' + dealId;
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                if (body) {
-                    try {
-						console.log("Status Code = " + resp.statusCode);
-                        var opportunity = JSON.parse(body);
-                        success(opportunity);
-                    } catch (ex) {
-                        failure(ex);
-                    }
-                }
-            } else {
-                success({});
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId + 'deals';
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                if (body) {
-                    try {
-						console.log("Status Code = " + resp.statusCode);
-                        var opportunity = JSON.parse(body);
-                        success(opportunity);
-                    } catch (ex) {
-                        failure(ex);
-                    }
-                }
-            } else {
-                success({});
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 
@@ -500,30 +205,9 @@ ContactAPI.prototype.deleteDealById = function deleteDealById(dealId, success, f
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/' + dealId;
     options.method = 'DELETE';
-	options.headers['Content-Type'] = 'application/json';
+    options.headers['Content-Type'] = 'application/json';
 
-    var del = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    success(body);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var del = createHttpsRequest(options, success, failure, "raw");
 
     try {
         del.end();
@@ -538,29 +222,7 @@ ContactAPI.prototype.createNote = function createNote(note, success, failure) {
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var note = JSON.parse(body);
-                    success(note);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var post = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(note);
@@ -577,29 +239,7 @@ ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var note = JSON.parse(body);
-                    success(note);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(note);
@@ -613,67 +253,19 @@ ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
 
 ContactAPI.prototype.getNoteByContactId = function getNoteByContactId(contactId, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId + '/notes';
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                if (body) {
-                    try {
-                        
-                        success(body);
-                    } catch (ex) {
-                        failure(ex);
-                    }
-                }
-            } else {
-                success({});
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
-ContactAPI.prototype.deleteNoteById = function deleteNoteById(contactId,noteId, success, failure) {
+ContactAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId, success, failure) {
     var options = this.getOptions();
-    options.path = '/dev/api/contacts/' + contactId + '/notes/'+noteId;
+    options.path = '/dev/api/contacts/' + contactId + '/notes/' + noteId;
     options.method = 'DELETE';
-	options.headers['Content-Type'] = 'application/json';
+    options.headers['Content-Type'] = 'application/json';
 
-    var del = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    
-                    success(body);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var del = createHttpsRequest(options, success, failure, "raw");
 
     try {
         del.end();
@@ -688,29 +280,7 @@ ContactAPI.prototype.createTask = function createTask(task, success, failure) {
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-					console.log("Status Code = " + resp.statusCode);
-                    var task = JSON.parse(body);
-                    success(task);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var post = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(task);
@@ -721,34 +291,13 @@ ContactAPI.prototype.createTask = function createTask(task, success, failure) {
     }
 };
 
-ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email,task, success, failure) {
+ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task, success, failure) {
     var options = this.getOptions();
-    options.path = '/dev/api/tasks/email/'+email;
+    options.path = '/dev/api/tasks/email/' + email;
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var task = JSON.parse(body);
-                    success(task);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var post = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(task);
@@ -765,28 +314,7 @@ ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var task = JSON.parse(body);
-                    success(task);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(task);
@@ -799,67 +327,19 @@ ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
 
 ContactAPI.prototype.getTaskById = function getTaskById(taskId, success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/tasks/' + taskId;
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                if (body) {
-                    try {
-                        var task = JSON.parse(body);
-                        success(task);
-                    } catch (ex) {
-                        failure(ex);
-                    }
-                }
-            } else {
-                success({});
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, failure) {
     var options = this.getOptions();
     options.path = '/dev/api/tasks/' + taskId;
     options.method = 'DELETE';
-	options.headers['Content-Type'] = 'application/json';
+    options.headers['Content-Type'] = 'application/json';
 
-    var del = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    
-                    success(body);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var del = createHttpsRequest(options, success, failure, "raw");
 
     try {
         del.end();
@@ -873,42 +353,21 @@ ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, f
 
 ContactAPI.prototype.changeContactOwner = function update(email, contactId, success, failure) {
 
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'owner_email' : email,
-		  'contact_id': contactId
-	  });
- 
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'owner_email': email,
+        'contact_id': contactId
+    });
+
     var options = this.getOptions();
     options.path = '/dev/api/contacts/change-owner';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         put.write(post_data);
@@ -922,75 +381,31 @@ ContactAPI.prototype.changeContactOwner = function update(email, contactId, succ
 
 ContactAPI.prototype.getDealSource = function getDealSource(success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/categories?entity_type=DEAL_SOURCE';
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var dealSource = JSON.parse(body);
-                    success(dealSource);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 
-ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropertyFilter(property,value,success, failure) {
+ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropertyFilter(property, value, success, failure) {
 
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'page_size' : 25,
-		  'global_sort_key': '-created_time',
-		  'filterJson': '{"rules":[{"LHS":"'+property+'","CONDITION":"EQUALS","RHS":"'+value+'"}],"contact_type":"PERSON"}'
-	  });
- 
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'page_size': 25,
+        'global_sort_key': '-created_time',
+        'filterJson': '{"rules":[{"LHS":"' + property + '","CONDITION":"EQUALS","RHS":"' + value + '"}],"contact_type":"PERSON"}'
+    });
+
     var options = this.getOptions();
     options.path = '/dev/api/filters/filter/dynamic-filter';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         put.write(post_data);
@@ -1000,45 +415,24 @@ ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropert
     }
 };
 
-ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(value,success, failure) {
+ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(value, success, failure) {
 
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'page_size' : 25,
-		  'global_sort_key': '-created_time',
-		  'filterJson': '{"rules":[{"LHS":"tags","CONDITION":"EQUALS","RHS":"'+value+'"}],"contact_type":"PERSON"}'
-	  });
- 
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'page_size': 25,
+        'global_sort_key': '-created_time',
+        'filterJson': '{"rules":[{"LHS":"tags","CONDITION":"EQUALS","RHS":"' + value + '"}],"contact_type":"PERSON"}'
+    });
+
     var options = this.getOptions();
     options.path = '/dev/api/filters/filter/dynamic-filter';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         put.write(post_data);
@@ -1050,34 +444,10 @@ ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(va
 
 ContactAPI.prototype.getContactCustomField = function getContactCustomField(success, failure) {
     var options = this.getOptions();
+    options.method = 'GET';
     options.path = '/dev/api/custom-fields/scope/position?scope=CONTACT';
 
-    https.get(options, function (resp) {
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    var customDatas = JSON.parse(body);
-                    success(customDatas);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        })
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    }).on("error", function(e){
-        if (failure) {
-            failure(e);
-        }
-    });
+    createHttpsRequest(options, success, failure).end();
 };
 
 
@@ -1087,33 +457,7 @@ ContactAPI.prototype.createCustomField = function createCustomField(customJson, 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 200){
-                        console.log("Error message = " + body);
-                    }
-                    var customJson = JSON.parse(body);
-                    success(customJson);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -1130,33 +474,7 @@ ContactAPI.prototype.updateCustomField = function updateCustomField(customJson, 
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 200){
-                        console.log("Error message = " + body);
-                    }
-                    var customJson = JSON.parse(body);
-                    success(customJson);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -1173,33 +491,7 @@ ContactAPI.prototype.createEvent = function createEvent(customJson, success, fai
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log(resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 200){
-                        console.log(body)
-                    }
-                    var customJson = JSON.parse(body);
-                    success(customJson);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -1210,46 +502,22 @@ ContactAPI.prototype.createEvent = function createEvent(customJson, success, fai
     }
 };
 
-ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags,contactIds,success, failure) {
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'data' : JSON.stringify(tags),
-		  'contact_ids': JSON.stringify(contactIds)
-	  });
+ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contactIds, success, failure) {
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'data': JSON.stringify(tags),
+        'contact_ids': JSON.stringify(contactIds)
+    });
     var options = this.getOptions();
     options.path = '/dev/api/bulk/update?action_type=ADD_TAG';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Accept'] = '*/*';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 204){
-                        console.log("Error message = " + body);
-                    }
-                    success("Tags updated");
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    options.headers['Accept'] = '*/*';
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
+
+    var put = createHttpsRequest(options, success, failure, "Tags updated");
 
     try {
         put.write(post_data);
@@ -1259,46 +527,22 @@ ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags,contact
     }
 };
 
-ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags,contactIds,success, failure) {
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'data' : JSON.stringify(tags),
-		  'contact_ids': JSON.stringify(contactIds)
-	  });
+ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, contactIds, success, failure) {
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'data': JSON.stringify(tags),
+        'contact_ids': JSON.stringify(contactIds)
+    });
     var options = this.getOptions();
     options.path = '/dev/api/bulk/update?action_type=REMOVE_TAG';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Accept'] = '*/*';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    console.log("Status Code = " + resp.statusCode);
-                    var statusCode = resp.statusCode;
-                    if (statusCode != 204){
-                        console.log("Error message = " + body);
-                    }
-                    success("Tags deleted");
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    options.headers['Accept'] = '*/*';
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
+
+    var put = createHttpsRequest(options, success, failure, "Tags deleted");
 
     try {
         put.write(post_data);
@@ -1310,45 +554,24 @@ ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags,c
 
 // Get Companies by custom field.
 
-ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropertyFilter(property,value,success, failure) {
+ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropertyFilter(property, value, success, failure) {
 
-	var qs = require("querystring");
-	// Build the post string from an object
-	  var post_data = qs.stringify({
-		  'page_size' : 25,
-		  'global_sort_key': '-created_time',
-		  'filterJson': '{"rules":[{"LHS":"'+property+'","CONDITION":"EQUALS","RHS":"'+value+'"}],"contact_type":"COMPANY"}'
-	  });
- 
+    var qs = require("querystring");
+    // Build the post string from an object
+    var post_data = qs.stringify({
+        'page_size': 25,
+        'global_sort_key': '-created_time',
+        'filterJson': '{"rules":[{"LHS":"' + property + '","CONDITION":"EQUALS","RHS":"' + value + '"}],"contact_type":"COMPANY"}'
+    });
+
     var options = this.getOptions();
     options.path = '/dev/api/filters/filter/dynamic-filter';
 
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	options.headers['Content-Length'] = Buffer.byteLength(post_data);
+    options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = https.request(options, function(resp) {
-        resp.setEncoding('utf8');
-        var body = "";
-        resp.on('data', function(data) {
-            body += data;
-        });
-        resp.on('end', function() {
-            if (success) {
-                try {
-                    var contacts = JSON.parse(body);
-                    success(contacts);
-                } catch (ex) {
-                    failure(ex);
-                }
-            }
-        });
-        resp.on('error', function(e) {
-            if (failure) {
-                failure(e);
-            }
-        });
-    });
+    var put = createHttpsRequest(options, success, failure);
 
     try {
         put.write(post_data);
@@ -1358,4 +581,42 @@ ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPrope
     }
 };
 
+function createHttpsRequest(options, success, failure, stringify) {
+
+    (!stringify) && (stringify = "json");
+
+    return https.request(options, function (resp) {
+        resp.setEncoding('utf8');
+        var body = "";
+        resp.on('data', function (data) {
+            body += data;
+        });
+        resp.on('end', function () {
+            if (success && resp.statusCode === 200) {
+                try {
+                    switch (stringify) {
+                        case "raw":
+                            success(body);
+                            break;
+                        case "json":
+                            success(JSON.parse(body));
+                            break;
+                        default:
+                            success(stringify);
+                            break;
+                    }
+                } catch (ex) {
+                    (failure) && failure(ex, resp.statusCode);
+                }
+            } else {
+                (failure) && failure(body, resp.statusCode);
+            }
+        });
+        resp.on('error', function (e) {
+            (failure) && failure(e, resp.statusCode);
+        });
+    }).on("error", function (e) {
+        (failure) && failure(e);
+    });
+}
 module.exports = AgileCRMManager;
