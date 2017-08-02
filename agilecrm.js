@@ -608,8 +608,8 @@ function createHttpsRequest(options, success, failure, stringify) {
                 } catch (ex) {
                     (failure) && failure(ex, resp.statusCode);
                 }
-            } else {
-                (failure) && failure(body, resp.statusCode);
+            } else if(failure && resp.statusCode !== 200) {
+                failure(body, resp.statusCode);
             }
         });
         resp.on('error', function (e) {
