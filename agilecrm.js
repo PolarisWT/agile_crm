@@ -200,8 +200,9 @@ ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId,
     createHttpsRequest(options, success, failure).end();
 };
 ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
-    this.getContactByEmail(email, function (contact) {
-        (contact && contact.id) && this.getDealByContactId(contact.id, success, failure);
+    var self = this;
+    self.getContactByEmail(email, function (contact) {
+        (contact && contact.id) && self.getDealByContactId(contact.id, success, failure);
     }, failure);
 };
 
