@@ -195,11 +195,15 @@ ContactAPI.prototype.getDealById = function getDealById(dealId, success, failure
 ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId, success, failure) {
     var options = this.getOptions();
     options.method = 'GET';
-    options.path = '/dev/api/contacts/' + contactId + 'deals';
+    options.path = '/dev/api/contacts/' + contactId + '/deals';
 
     createHttpsRequest(options, success, failure).end();
 };
-
+ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
+    this.getContactByEmail(email, function (contact) {
+        (contact && contact.id) && this.getDealByContactId(contact.id, success, failure);
+    }, failure);
+};
 
 ContactAPI.prototype.deleteDealById = function deleteDealById(dealId, success, failure) {
     var options = this.getOptions();
