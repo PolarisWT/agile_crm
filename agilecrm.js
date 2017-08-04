@@ -597,7 +597,9 @@ function createHttpsRequest(options, success, failure, stringify) {
             body += data;
         });
         resp.on('end', function () {
-            if (success && resp.statusCode === 200) {
+            if (resp.statusCode === 200) {
+                if (!success) return;
+
                 try {
                     switch (stringify) {
                         case "raw":
@@ -611,10 +613,14 @@ function createHttpsRequest(options, success, failure, stringify) {
                             break;
                     }
                 } catch (ex) {
-                    (failure) && failure(ex, resp.statusCode);
+                    (failure) && failure(ex);
                 }
-            } else if(failure && resp.statusCode !== 200) {
-                failure(body, resp.statusCode);
+            } else if (resp.statusCode === 204) {
+                if (!success) return;
+
+                success();
+            } else if (failure) {
+                failure(body);
             }
         });
         resp.on('error', function (e) {
