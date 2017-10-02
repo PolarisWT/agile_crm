@@ -238,6 +238,24 @@ ContactAPI.prototype.createNote = function createNote(note, success, failure) {
     }
 };
 
+ContactAPI.prototype.createDealNote = function createDealNote(note, success, failure) {
+    var options = this.getOptions();
+    options.path = '/dev/api/opportunity/deals/notes';
+    options.method = 'POST';
+    options.headers['Content-Type'] = 'application/json';
+
+    var post = createHttpsRequest(options, success, failure);
+
+    try {
+        var data = JSON.stringify(note);
+        post.write(data);
+        post.end();
+    } catch (ex) {
+        failure(ex);
+    }
+};
+
+
 ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
     var options = this.getOptions();
     options.path = '/dev/api/notes';
