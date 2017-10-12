@@ -1,5 +1,22 @@
 var https = require('https');
 
+function setPromiseIfNoCallbacks(success, failure) {
+    var successResolve = null;
+    var failureReject = null;
+    var promise = null;
+    if (!success && !failure) {
+        promise = new Promise(function (resolve, reject) {
+            successResolve = resolve;
+            failureReject = reject;
+        });
+    }
+    return {
+        promise: promise,
+        success: successResolve || success,
+        failure: failureReject || failure
+    };
+}
+
 function AgileCRMManager(domain, key, email) {
     this.domain = domain + ".agilecrm.com";
     this.key = key;
@@ -45,54 +62,42 @@ ContactAPI.prototype.getOptions = function getOptions() {
 };
 
 ContactAPI.prototype.getListContacts = function getListContacts(success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts?page_size=20';
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getContactById = function getContactById(contactId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId;
 
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getContactByEmail = function getContactByEmail(email, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts/search/email/' + email;
 
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.add = function add(contact, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -101,20 +106,17 @@ ContactAPI.prototype.add = function add(contact, success, failure) {
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.update = function update(contact, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/edit-properties';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -123,40 +125,34 @@ ContactAPI.prototype.update = function update(contact, success, failure) {
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteContact = function deleteContact(contactId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/' + contactId;
     options.method = 'DELETE';
     options.headers['Content-Type'] = 'application/json';
 
-    var del = createHttpsRequest(options, success, failure);
+    var del = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         del.end();
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.updateTagsById = function update(contact, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/edit/tags';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -165,20 +161,17 @@ ContactAPI.prototype.updateTagsById = function update(contact, success, failure)
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteTagsById = function update(contact, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/delete/tags';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(contact);
@@ -187,20 +180,17 @@ ContactAPI.prototype.deleteTagsById = function update(contact, success, failure)
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createDeal = function createDeal(opportunity, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(opportunity);
@@ -209,20 +199,17 @@ ContactAPI.prototype.createDeal = function createDeal(opportunity, success, fail
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/partial-update';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(opportunity);
@@ -231,77 +218,62 @@ ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, fail
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getDealById = function getDealById(dealId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/opportunity/' + dealId;
 
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId + '/deals';
-    return promise;
+    return fakePromise.promise;
 
-    createHttpsRequest(options, success, failure).end();
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
 };
 ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var self = this;
     self.getContactByEmail(email, function (contact) {
         (contact && contact.id) && self.getDealByContactId(contact.id, success, failure);
     }, failure);
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteDealById = function deleteDealById(dealId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/' + dealId;
     options.method = 'DELETE';
     options.headers['Content-Type'] = 'application/json';
 
-    var del = createHttpsRequest(options, success, failure, "raw");
+    var del = createHttpsRequest(options, fakePromise.success, fakePromise.failure, "raw");
 
     try {
         del.end();
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createNote = function createNote(note, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/notes';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(note);
@@ -310,20 +282,17 @@ ContactAPI.prototype.createNote = function createNote(note, success, failure) {
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createDealNote = function createDealNote(note, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/deals/notes';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(note);
@@ -333,21 +302,18 @@ ContactAPI.prototype.createDealNote = function createDealNote(note, success, fai
         failure(ex);
     }
 
-    return promise;
+    return fakePromise.promise;
 };
 
 
 ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/notes';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(note);
@@ -357,54 +323,45 @@ ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
         failure(ex);
     }
 
-    return promise;
+    return fakePromise.promise;
 };
 
 
 ContactAPI.prototype.getNoteByContactId = function getNoteByContactId(contactId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId + '/notes';
 
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/' + contactId + '/notes/' + noteId;
     options.method = 'DELETE';
     options.headers['Content-Type'] = 'application/json';
 
-    var del = createHttpsRequest(options, success, failure, "raw");
+    var del = createHttpsRequest(options, fakePromise.success, fakePromise.failure, "raw");
 
     try {
         del.end();
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createTask = function createTask(task, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(task);
@@ -413,20 +370,17 @@ ContactAPI.prototype.createTask = function createTask(task, success, failure) {
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/email/' + email;
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var post = createHttpsRequest(options, success, failure);
+    var post = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(task);
@@ -435,20 +389,17 @@ ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task,
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/partial-update';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(task);
@@ -457,40 +408,34 @@ ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getTaskById = function getTaskById(taskId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/tasks/' + taskId;
 
-    createHttpsRequest(options, success, failure).end();
-    return promise;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/' + taskId;
     options.method = 'DELETE';
     options.headers['Content-Type'] = 'application/json';
 
-    var del = createHttpsRequest(options, success, failure, "raw");
+    var del = createHttpsRequest(options, fakePromise.success, fakePromise.failure, "raw");
 
     try {
         del.end();
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 
@@ -498,10 +443,7 @@ ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, f
 // Change contact owner by contact ID and Owner ID
 
 ContactAPI.prototype.changeContactOwner = function update(email, contactId, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
     // Build the post string from an object
@@ -517,7 +459,7 @@ ContactAPI.prototype.changeContactOwner = function update(email, contactId, succ
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         put.write(post_data);
@@ -525,32 +467,26 @@ ContactAPI.prototype.changeContactOwner = function update(email, contactId, succ
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 
 // Get Deal Source IDs
 
 ContactAPI.prototype.getDealSource = function getDealSource(success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/categories?entity_type=DEAL_SOURCE';
 
-    createHttpsRequest(options, success, failure).end();
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
 
-    return promise;
+    return fakePromise.promise;
 };
 
 
 ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropertyFilter(property, value, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
     // Build the post string from an object
@@ -567,7 +503,7 @@ ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropert
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         put.write(post_data);
@@ -575,14 +511,11 @@ ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropert
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(value, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
     // Build the post string from an object
@@ -599,7 +532,7 @@ ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(va
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         put.write(post_data);
@@ -607,35 +540,29 @@ ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(va
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.getContactCustomField = function getContactCustomField(success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/custom-fields/scope/position?scope=CONTACT';
 
-    createHttpsRequest(options, success, failure).end();
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
 
-    return promise;
+    return fakePromise.promise;
 };
 
 
 ContactAPI.prototype.createCustomField = function createCustomField(customJson, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/custom-fields';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -644,20 +571,17 @@ ContactAPI.prototype.createCustomField = function createCustomField(customJson, 
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.updateCustomField = function updateCustomField(customJson, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/custom-fields';
     options.method = 'PUT';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -666,20 +590,17 @@ ContactAPI.prototype.updateCustomField = function updateCustomField(customJson, 
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.createEvent = function createEvent(customJson, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/events';
     options.method = 'POST';
     options.headers['Content-Type'] = 'application/json';
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         var data = JSON.stringify(customJson);
@@ -688,14 +609,11 @@ ContactAPI.prototype.createEvent = function createEvent(customJson, success, fai
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contactIds, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var qs = require("querystring");
     // Build the post string from an object
     var post_data = qs.stringify({
@@ -710,7 +628,7 @@ ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contac
     options.headers['Accept'] = '*/*';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure, "Tags updated");
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure, "Tags updated");
 
     try {
         put.write(post_data);
@@ -718,14 +636,11 @@ ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contac
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, contactIds, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var qs = require("querystring");
     // Build the post string from an object
     var post_data = qs.stringify({
@@ -740,7 +655,7 @@ ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, 
     options.headers['Accept'] = '*/*';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure, "Tags deleted");
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure, "Tags deleted");
 
     try {
         put.write(post_data);
@@ -748,17 +663,14 @@ ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, 
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 
 // Get Companies by custom field.
 
 ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropertyFilter(property, value, success, failure) {
-    var promise = null
-    if (!success && !failure) {
-      promise = new Promise((resolve, reject) => { success = resolve; failure = reject })
-    }
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
     // Build the post string from an object
@@ -775,7 +687,7 @@ ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPrope
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     options.headers['Content-Length'] = Buffer.byteLength(post_data);
 
-    var put = createHttpsRequest(options, success, failure);
+    var put = createHttpsRequest(options, fakePromise.success, fakePromise.failure);
 
     try {
         put.write(post_data);
@@ -783,7 +695,7 @@ ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPrope
     } catch (ex) {
         failure(ex);
     }
-    return promise;
+    return fakePromise.promise;
 };
 
 function createHttpsRequest(options, success, failure, stringify) {
@@ -833,4 +745,3 @@ function createHttpsRequest(options, success, failure, stringify) {
     });
 }
 module.exports = AgileCRMManager;
-
