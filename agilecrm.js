@@ -236,9 +236,9 @@ ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId,
     var options = this.getOptions();
     options.method = 'GET';
     options.path = '/dev/api/contacts/' + contactId + '/deals';
-    return fakePromise.promise;
 
     createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
 };
 ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
