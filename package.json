@@ -1,5 +1,5 @@
 {
-  "name": "agile_crm_pkg",
+  "name": "agile_crm",
   "version": "1.3.0",
   "description": "Rest call to Agile CRM - Now with Promises",
   "main": "agilecrm.js",
