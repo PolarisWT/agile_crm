@@ -62,6 +62,8 @@ AgileAPI.prototype.getOptions = function getOptions() {
     return this._options;
 };
 
+/** CONTACTS API **/
+
 AgileAPI.prototype.getListContacts = function getListContacts(success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
@@ -184,6 +186,8 @@ AgileAPI.prototype.deleteTagsById = function update(contact, success, failure) {
     return fakePromise.promise;
 };
 
+/** DEALS API **/
+
 AgileAPI.prototype.createDeal = function createDeal(opportunity, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
@@ -266,6 +270,8 @@ AgileAPI.prototype.deleteDealById = function deleteDealById(dealId, success, fai
     }
     return fakePromise.promise;
 };
+
+/** NOTES API **/
 
 AgileAPI.prototype.createNote = function createNote(note, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
@@ -355,6 +361,7 @@ AgileAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId, s
     return fakePromise.promise;
 };
 
+/** TASKS API **/
 AgileAPI.prototype.createTask = function createTask(task, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
@@ -699,11 +706,31 @@ AgileAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropert
     return fakePromise.promise;
 };
 
+/** CAMPAIGNS API **/
+AgileAPI.prototype.getListCampaigns = function getListCampaigns(success, failure) {
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
+    var options = this.getOptions();
+    options.method = 'GET';
+    options.path = '/dev/api/workflows?page_size=20';
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
+};
+
+AgileAPI.prototype.removeContactFromCampaign = function removeContactFromCampaign(campaignId, contactId, success, failure) {
+    var fakePromise = setPromiseIfNoCallbacks(success, failure);
+    var options = this.getOptions();
+    options.method = 'DELETE';
+    options.path = `/dev/api/workflows/remove-active-subscriber/${campaignId}/${contactId}`;
+    createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
+    return fakePromise.promise;
+};
+
+
 function createHttpsRequest(options, success, failure, stringify) {
-    options = options || {}
-    success = success || function () {}
-    failure = failure || function () {}
-    stringify = stringify || 'json'
+    options = options || {};
+    success = success || function () {};
+    failure = failure || function () {};
+    stringify = stringify || 'json';
 
     return https.request(options, function (resp) {
         resp.setEncoding('utf8');
