@@ -33,7 +33,7 @@ AgileCRMManager.prototype.key = null;
 
 AgileCRMManager.prototype.email = null;
 
-AgileCRMManager.prototype.contactAPI = null;
+AgileCRMManager.prototype.agileAPI = null;
 
 function AgileAPI(domain, key, email) {
     this.domain = domain;
@@ -700,7 +700,7 @@ AgileAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropert
 };
 
 function createHttpsRequest(options, success, failure, stringify) {
-    option = options || {}
+    options = options || {}
     success = success || function () {}
     failure = failure || function () {}
     stringify = stringify || 'json'
