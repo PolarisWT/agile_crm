@@ -1,11 +1,11 @@
 'use strict';
 
-var https = require('https');
+const https = require('https');
 
 function setPromiseIfNoCallbacks(success, failure) {
-    var successResolve = null;
-    var failureReject = null;
-    var promise = null;
+    let successResolve = null;
+    let failureReject = null;
+    let promise = null;
     if (!success && !failure) {
         promise = new Promise(function (resolve, reject) {
             successResolve = resolve;
@@ -24,7 +24,7 @@ function AgileCRMManager(domain, key, email) {
     this.key = key;
     this.email = email;
 
-    this.contactAPI = new ContactAPI(this.domain, this.key, this.email);
+    this.agileAPI = new AgileAPI(this.domain, this.key, this.email);
 }
 
 AgileCRMManager.prototype.domain = null;
@@ -35,21 +35,21 @@ AgileCRMManager.prototype.email = null;
 
 AgileCRMManager.prototype.contactAPI = null;
 
-function ContactAPI(domain, key, email) {
+function AgileAPI(domain, key, email) {
     this.domain = domain;
     this.key = key;
     this.email = email;
 }
 
-ContactAPI.prototype.domain = null;
+AgileAPI.prototype.domain = null;
 
-ContactAPI.prototype.key = null;
+AgileAPI.prototype.key = null;
 
-ContactAPI.prototype.email = null;
+AgileAPI.prototype.email = null;
 
-ContactAPI.prototype._options = null;
+AgileAPI.prototype._options = null;
 
-ContactAPI.prototype.getOptions = function getOptions() {
+AgileAPI.prototype.getOptions = function getOptions() {
     this._options = {
         host: this.domain,
         auth: `${this.email}:${this.key}`, // easier way to compute Authorization Header
@@ -62,7 +62,7 @@ ContactAPI.prototype.getOptions = function getOptions() {
     return this._options;
 };
 
-ContactAPI.prototype.getListContacts = function getListContacts(success, failure) {
+AgileAPI.prototype.getListContacts = function getListContacts(success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -71,7 +71,7 @@ ContactAPI.prototype.getListContacts = function getListContacts(success, failure
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getContactById = function getContactById(contactId, success, failure) {
+AgileAPI.prototype.getContactById = function getContactById(contactId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -81,7 +81,7 @@ ContactAPI.prototype.getContactById = function getContactById(contactId, success
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getContactByEmail = function getContactByEmail(email, success, failure) {
+AgileAPI.prototype.getContactByEmail = function getContactByEmail(email, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -91,7 +91,7 @@ ContactAPI.prototype.getContactByEmail = function getContactByEmail(email, succe
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.add = function add(contact, success, failure) {
+AgileAPI.prototype.add = function add(contact, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts';
@@ -110,7 +110,7 @@ ContactAPI.prototype.add = function add(contact, success, failure) {
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.update = function update(contact, success, failure) {
+AgileAPI.prototype.update = function update(contact, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/edit-properties';
@@ -129,7 +129,7 @@ ContactAPI.prototype.update = function update(contact, success, failure) {
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteContact = function deleteContact(contactId, success, failure) {
+AgileAPI.prototype.deleteContact = function deleteContact(contactId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/' + contactId;
@@ -146,7 +146,7 @@ ContactAPI.prototype.deleteContact = function deleteContact(contactId, success, 
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.updateTagsById = function update(contact, success, failure) {
+AgileAPI.prototype.updateTagsById = function update(contact, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/edit/tags';
@@ -165,7 +165,7 @@ ContactAPI.prototype.updateTagsById = function update(contact, success, failure)
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteTagsById = function update(contact, success, failure) {
+AgileAPI.prototype.deleteTagsById = function update(contact, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/delete/tags';
@@ -184,7 +184,7 @@ ContactAPI.prototype.deleteTagsById = function update(contact, success, failure)
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createDeal = function createDeal(opportunity, success, failure) {
+AgileAPI.prototype.createDeal = function createDeal(opportunity, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity';
@@ -203,7 +203,7 @@ ContactAPI.prototype.createDeal = function createDeal(opportunity, success, fail
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, failure) {
+AgileAPI.prototype.updateDeal = function updateDeal(opportunity, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/partial-update';
@@ -222,7 +222,7 @@ ContactAPI.prototype.updateDeal = function updateDeal(opportunity, success, fail
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getDealById = function getDealById(dealId, success, failure) {
+AgileAPI.prototype.getDealById = function getDealById(dealId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -232,7 +232,7 @@ ContactAPI.prototype.getDealById = function getDealById(dealId, success, failure
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId, success, failure) {
+AgileAPI.prototype.getDealByContactId = function getDealByContactId(contactId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -241,7 +241,7 @@ ContactAPI.prototype.getDealByContactId = function getDealByContactId(contactId,
     createHttpsRequest(options, fakePromise.success, fakePromise.failure).end();
     return fakePromise.promise;
 };
-ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
+AgileAPI.prototype.getDealByContactEmail = function getDealByContactEmail(email, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var self = this;
     self.getContactByEmail(email, function (contact) {
@@ -250,7 +250,7 @@ ContactAPI.prototype.getDealByContactEmail = function getDealByContactEmail(emai
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteDealById = function deleteDealById(dealId, success, failure) {
+AgileAPI.prototype.deleteDealById = function deleteDealById(dealId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/' + dealId;
@@ -267,7 +267,7 @@ ContactAPI.prototype.deleteDealById = function deleteDealById(dealId, success, f
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createNote = function createNote(note, success, failure) {
+AgileAPI.prototype.createNote = function createNote(note, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/notes';
@@ -286,7 +286,7 @@ ContactAPI.prototype.createNote = function createNote(note, success, failure) {
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createDealNote = function createDealNote(note, success, failure) {
+AgileAPI.prototype.createDealNote = function createDealNote(note, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/opportunity/deals/notes';
@@ -307,7 +307,7 @@ ContactAPI.prototype.createDealNote = function createDealNote(note, success, fai
 };
 
 
-ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
+AgileAPI.prototype.updateNote = function updateNote(note, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/notes';
@@ -328,7 +328,7 @@ ContactAPI.prototype.updateNote = function updateNote(note, success, failure) {
 };
 
 
-ContactAPI.prototype.getNoteByContactId = function getNoteByContactId(contactId, success, failure) {
+AgileAPI.prototype.getNoteByContactId = function getNoteByContactId(contactId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -338,7 +338,7 @@ ContactAPI.prototype.getNoteByContactId = function getNoteByContactId(contactId,
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId, success, failure) {
+AgileAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/contacts/' + contactId + '/notes/' + noteId;
@@ -355,7 +355,7 @@ ContactAPI.prototype.deleteNoteById = function deleteNoteById(contactId, noteId,
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createTask = function createTask(task, success, failure) {
+AgileAPI.prototype.createTask = function createTask(task, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks';
@@ -374,7 +374,7 @@ ContactAPI.prototype.createTask = function createTask(task, success, failure) {
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task, success, failure) {
+AgileAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/email/' + email;
@@ -393,7 +393,7 @@ ContactAPI.prototype.createTaskByEmail = function createTaskByEmail(email, task,
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
+AgileAPI.prototype.updateTask = function updateTask(task, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/partial-update';
@@ -412,7 +412,7 @@ ContactAPI.prototype.updateTask = function updateTask(task, success, failure) {
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getTaskById = function getTaskById(taskId, success, failure) {
+AgileAPI.prototype.getTaskById = function getTaskById(taskId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -422,7 +422,7 @@ ContactAPI.prototype.getTaskById = function getTaskById(taskId, success, failure
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, failure) {
+AgileAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/tasks/' + taskId;
@@ -443,7 +443,7 @@ ContactAPI.prototype.deleteTaskById = function deleteTaskById(taskId, success, f
 
 // Change contact owner by contact ID and Owner ID
 
-ContactAPI.prototype.changeContactOwner = function update(email, contactId, success, failure) {
+AgileAPI.prototype.changeContactOwner = function update(email, contactId, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
@@ -474,7 +474,7 @@ ContactAPI.prototype.changeContactOwner = function update(email, contactId, succ
 
 // Get Deal Source IDs
 
-ContactAPI.prototype.getDealSource = function getDealSource(success, failure) {
+AgileAPI.prototype.getDealSource = function getDealSource(success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -486,7 +486,7 @@ ContactAPI.prototype.getDealSource = function getDealSource(success, failure) {
 };
 
 
-ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropertyFilter(property, value, success, failure) {
+AgileAPI.prototype.getContactsByPropertyFilter = function getContactsByPropertyFilter(property, value, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
@@ -515,7 +515,7 @@ ContactAPI.prototype.getContactsByPropertyFilter = function getContactsByPropert
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(value, success, failure) {
+AgileAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(value, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
@@ -544,7 +544,7 @@ ContactAPI.prototype.getContactsByTagFilter = function getContactsByTagFilter(va
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.getContactCustomField = function getContactCustomField(success, failure) {
+AgileAPI.prototype.getContactCustomField = function getContactCustomField(success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.method = 'GET';
@@ -556,7 +556,7 @@ ContactAPI.prototype.getContactCustomField = function getContactCustomField(succ
 };
 
 
-ContactAPI.prototype.createCustomField = function createCustomField(customJson, success, failure) {
+AgileAPI.prototype.createCustomField = function createCustomField(customJson, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/custom-fields';
@@ -575,7 +575,7 @@ ContactAPI.prototype.createCustomField = function createCustomField(customJson, 
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.updateCustomField = function updateCustomField(customJson, success, failure) {
+AgileAPI.prototype.updateCustomField = function updateCustomField(customJson, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/custom-fields';
@@ -594,7 +594,7 @@ ContactAPI.prototype.updateCustomField = function updateCustomField(customJson, 
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.createEvent = function createEvent(customJson, success, failure) {
+AgileAPI.prototype.createEvent = function createEvent(customJson, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var options = this.getOptions();
     options.path = '/dev/api/events';
@@ -613,7 +613,7 @@ ContactAPI.prototype.createEvent = function createEvent(customJson, success, fai
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contactIds, success, failure) {
+AgileAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contactIds, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var qs = require("querystring");
     // Build the post string from an object
@@ -640,7 +640,7 @@ ContactAPI.prototype.addTagstoContacts = function addTagstoContacts(tags, contac
     return fakePromise.promise;
 };
 
-ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, contactIds, success, failure) {
+AgileAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, contactIds, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
     var qs = require("querystring");
     // Build the post string from an object
@@ -670,7 +670,7 @@ ContactAPI.prototype.deleteTagstoContacts = function deleteTagstoContacts(tags, 
 
 // Get Companies by custom field.
 
-ContactAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropertyFilter(property, value, success, failure) {
+AgileAPI.prototype.getCompaniesByPropertyFilter = function getCompaniesByPropertyFilter(property, value, success, failure) {
     var fakePromise = setPromiseIfNoCallbacks(success, failure);
 
     var qs = require("querystring");
