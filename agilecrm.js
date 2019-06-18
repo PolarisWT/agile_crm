@@ -1,3 +1,5 @@
+'use strict';
+
 var https = require('https');
 
 function setPromiseIfNoCallbacks(success, failure) {
@@ -21,8 +23,6 @@ function AgileCRMManager(domain, key, email) {
     this.domain = domain + ".agilecrm.com";
     this.key = key;
     this.email = email;
-
-    var authStr = email + ":" + key;
 
     this.contactAPI = new ContactAPI(this.domain, this.key, this.email);
 }
@@ -52,8 +52,9 @@ ContactAPI.prototype._options = null;
 ContactAPI.prototype.getOptions = function getOptions() {
     this._options = {
         host: this.domain,
+        auth: `${this.email}:${this.key}`, // easier way to compute Authorization Header
         headers: {
-            'Authorization': 'Basic ' + new Buffer(this.email + ':' + this.key).toString('base64'),
+            // 'Authorization': 'Basic ' + new Buffer(this.email + ':' + this.key).toString('base64'),
             'Accept': 'application/json'
         }
     };
